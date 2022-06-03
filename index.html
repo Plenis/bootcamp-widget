@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js"
+      defer
+    ></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <!-- <link rel="stylesheet" href="simple-grid.css" />
+    <link rel="stylesheet" href="style.css" /> -->
+    <script src="./totalBill.js"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <title>Phonebill Widget</title>
+  </head>
+  <body>
+    <h1 style="text-align: center; margin-bottom: 2em; ">
+        Bootcamp functions Widget</h1>
+
+<div class="container">
+    <div x-data="bootcampWidget()" class="row">
+      <div class="col" style="background-color: lightgrey;">
+        <h3>Total Phonebill</h3>
+        <p>
+          This will help us calculate the total phonebill, by adding the totals
+          of the SMSs and calls made in call log.
+          <br />
+          The cost is: <b>R2.75</b> per call & <b>R0.65</b> per sms.
+        </p>
+
+        <div>
+          <span class="input-group-text" id="basic-addon1">Enter Phonebill Log</span>
+          <input 
+          x-model="userInput"
+          placeholder="eg. call, sms, sms, call"  
+            type="text" 
+            class="form-control" 
+            aria-label="Usage Log" 
+            aria-describedby="basic-addon1">
+          <br><br>
+          <button @click="billTotal()" class="btn-success">Confirm</button>
+        </div>
+
+        <!-- <button x-on:click="callCount++"> Add Call log</button> <button @click="callCount--"> - </button>
+            <br>
+            <button x-on:click="smsCount++">Add SMS log</button> <button @click="smsCount--"> - </button> -->
+
+        <div class="totals">
+          
+          <br />
+          <div>
+            <h3>Total bill:</h3>
+            <b> R<span x-text="total"></span> </b>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <h3>Enough Airtime</h3>
+        <p>
+          This will help you calculate whether you have enough airtime for the
+          bill usage you want to log. You will have to insert the current amount
+          of airtime you have and then log in your phonebill usage.
+          <br />
+          The cost is: <b>R1.88</b> per call, <b>R12</b> per data bundle and
+          <b>R0.75</b> per SMS.
+        </p>
+
+        <div>
+          <div class="input-group mb-3">
+            <span class="input-group-text">R</span>
+            <input  
+            x-model="airtimeAvailable"
+            placeholder="Airtime available"
+            type="airtimeAvailable" 
+            class="form-control" 
+            aria-label="Amount (to the nearest rand)">
+            <span class="input-group-text">.00</span>
+          </div>
+
+          <!-- <br><br> -->
+          
+          <span class="input-group-text" id="basic-addon1">Enter Airtime Usage Log</span>
+         <input 
+         x-model="usageLog"
+         placeholder="Usage string"  
+           type="text" 
+           class="form-control" 
+           placeholder="Username" 
+           aria-label="Username" 
+           aria-describedby="basic-addon1">
+          <br><br>
+          <button class="btn-secondary" @click="enoughAirtime()" type="submit">Confirm</button>
+        </div>
+
+        <div x-show="open" x-transition>
+         You have <b>R<span x-text="airtimeTotal"></span></b> airtime remainding.
+        </div>
+      </div>
+
+      <div class="col" style="background-color:lightgrey;">
+        <h3>Greet</h3>
+        <p>Enter your name and press the greet me button to see a message greeting you.</p>
+        <br>
+        <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Name</span>
+         <input 
+         x-model="name"
+         placeholder="Enter name"  
+           type="text" 
+           class="form-control" 
+           placeholder="Username" 
+           aria-label="Username" 
+           aria-describedby="basic-addon1">
+          </div>
+        <br>
+        <div>
+          <button @click="showMessage()" class="btn-warning">Greet Me</button>
+          <br><br>
+          <div style="text-align:center;"><b><span x-text="messageDisplay"></span></b></div>
+        </div>
+      </div>
+    </div>
+</div>    
+  </body>
+
+  <script>
+    function bootcampWidget() {
+      return {
+        message: "Hello, ",
+        messageDisplay: "",
+        userInput: "",
+        total: 0,
+        airtimeTotal: 0,
+        usageLog: '',
+        airtimeAvailable: 0,
+        open: false,
+        name: '',
+
+        showMessage() {
+          this.messageDisplay = this.message + this.name;
+        },
+
+        billTotal() {
+          var call = [];
+          var sms = [];
+          let bill = this.userInput;
+
+          bill = bill.split(", ");
+          for (var i = 0; i < bill.length; i++) {
+            var total = bill[i];
+
+            if ("sms" === total) {
+              sms.push(total);
+            } else if ("call" === total) {
+              call.push(total);
+            }
+          }
+          var totalBill = sms.length * 0.65 + call.length * 2.75;
+          console.log(totalBill);
+          this.total = totalBill.toFixed(2);
+        },
+
+        enoughAirtime() {
+          var data = [];
+          var call = [];
+          var sms = [];
+
+          var usageSplit = this.usageLog.split(",");
+
+          for (var i = 0; i < usageSplit.length; i++) {
+            var position = usageSplit[i];
+
+            if (position == "data") {
+              data.push(position);
+            } else if (position == "call") {
+              call.push(position);
+            } else if (position == "sms") {
+              sms.push(position);
+            }
+          }
+
+          var dataPrice = data.length * 12;
+          var callPrice = call.length * 1.88;
+          var smsPrice = sms.length * 0.75;
+          console.log(smsPrice);
+
+          var total = dataPrice + callPrice + smsPrice;
+
+          var grandTotal = this.airtimeAvailable - total;
+
+          if (grandTotal > 0) {
+            this.airtimeTotal = grandTotal.toFixed(2);
+          } else {
+            this.airtimeTotal = 0;
+          }
+          this.open = true;
+        },
+      };
+    }
+  </script>
+</html>
